@@ -10,9 +10,10 @@
 
 ## 简介
 
-entop 是用来展示远端 Erlang 节点运行信息的工具，其信息显示的方式类似于 Unix 中的 top 命令。
-若要保证 entop 的正常运行，在 pre-R15 环境下，需要使用 `cecho 0.3.0` 版本；在 R15 或更高版本的环境下需要 `cecho 0.4.0` 版本。
+entop 是用来展示远端 Erlang 节点运行信息的工具，其信息显示的方式类似于 Unix 中的 top 命令。   
+若要保证 entop 的正常运行，在 pre-R15 环境下，需要使用 `cecho 0.3.0` 版本；在 R15 或更高版本的环境下需要 `cecho 0.4.0` 版本。    
 cecho 的 github 地址：[这里](http://www.github.com/mazenharake/cecho)。
+
 
 ----------
 
