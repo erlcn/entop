@@ -79,6 +79,6 @@ entop 的接口允许用户定制化，所以本节描述的接口均为“内�
 
 贡献
 ----------
-Should you find yourself using entop and have issues, comments or feedback please [create an issue!] [1]
+如果你在使用 entop 中发现了问题，可以在这里进行反馈 [create an issue] [1] 。
 
 [1]: http://github.com/moooofly/entop/issues "entop issues"
