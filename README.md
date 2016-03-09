@@ -1,61 +1,71 @@
+
 # entop
-A top-like Erlang node monitoring tool
+
+如同 Linux 中的 top 一样的 Erlang 节点监督工具。
 
 
-## Introduction
-Entop is a tool which shows information about a remote Erlang node in a way which is similar to unix 'top'. 
+## 简介
+entop 是用来展现远端 Erlang 节点信息的工具，其显示信息的方式类似于 Unix 中的 top 命令。
 
-For entop to run it needs `cecho 0.3.0` or higher for pre-R15 or `cecho 0.4.0` or higher for R15 and above
+entop 的正常运行在 pre-R15 情况下需要 `cecho 0.3.0` 的支持，在 R15 或更高版本的情况下需要 `cecho 0.4.0` 的支持。
 (http://www.github.com/mazenharake/cecho).
 
-## Compile
-To clean/compile run
+## 编译
+清理和编译可以分别运行如下命令
 
+```
     ./rebar clean
     ./rebar compile
+```
 
-NOTE: If you have problems with dependencies to `cecho` then create a symlink to cecho in `deps/` (if you already have cecho somewhere) or run `./rebar get-deps` to download the latest version. Don't forget to recompile if you get the dependencies through rebar.
+注意：如果你遇到和 `cecho` 相关的依赖问题，可以手动创建符号链接到 `deps/` 下的 cecho （如果你的 cecho 放在其他目录也可以进行类似操作），或者运行 `./rebar get-deps` 以下载最新版本。当通过 rebar 获取到最新版本后，不要忘记重新编译整个应用。
 
-## Usage
-To run entop make sure you have Erlang installed and that the cecho library (http://www.github.com/mazenharake/cecho) is available in your Erlang code path. The start script assumes that you run it inside the entop application root directory, if you don't want that then change the paths in the scripts accordingly or just make sure you have the ebin/ directory for entop in your Erlang code path. Look at the start script for more details.
+## 用法
 
+若想成功运行 entop ，首先要确保 Erlang 已经安装到你的系统之中，并且 cecho 库所在路径被 Erlang code path 所包含。
+项目中默认提供的启动脚本(entop)假定了其在 entop 应用根目录下被执行，如果这与你的实际情况不符，请自行调整脚本的相应路径，或者直接确保 entop 的 ebin/ 目录包含在 Erlang code path 之中。详情请参考启动脚本具体内容。
+
+```
     Usage: ./entop <TARGETNODE> [-name <NAME>|-sname <SNAME>] [-setcookie <COOKIE>]
+```
 
-### An example of how you run entop:
+### entop 的运行示例
 
-    > ./entop foo@11.0.1.2 -name entop@11.0.1.3 -setcookie secret
+```
+    > ./entop rmq_yoyo@YOYO -sname entop -setcookie yoyo
+```
 
-### User Interface:
-entop's interface can be customized so this section only applies for the "built-in" interface.
+### 用户接口
 
-#### Headers
-**First row** shows information about the node which is more or less static such as the node name the operating system, erl flags and erlang version it is running.    
-**The second** row shows information on what the local time is (according to the node), how long it has been up for (Days:Hours:Minutes:Seconds) and how much latency there is to the node I.e. how long a net_adm:ping() takes.    
-**Third row** shows information about the processes of the system; the total number of processes, the run queue (number of processes scheduled to run by the scheduler(s)), the reductions per interval (RpI) which shows how many reductions the system has made since it last called the node and how much memory the processes are using.   
-**Fourth row** shows how much system memory, atom memory (currently used/total allocated), binary memory, code memory and ets memory.    
-**Fifth row** is left blank and is reserved for now.    
-**Sixth row** shows information about the rows in the list such as the interval in which the information is fetched, what the list is sorted on and how long it took to retrieve the information.
+entop 的接口允许用户定制化，所以本节描述的接口均为“内置”接口。
 
-### Commands when running entop:
+#### 表头
+**第一行** 主要展示了节点的静态信息，例如节点名、操作系统类型、指定的 erl flag 、当前所运行的 erlang 版本信息。
+**第二行** 展示了（目标节点所在机器的）本地时间、目标节点已持续运行的时间（格式为 Days:Hours:Minutes:Seconds）、运行 entop 的节点与目标节点之间的网络延迟情况（即 net_adm:ping() 成功交互所需花费的时间）
+**第三行** 展示了系统中每个进程的具体信息、进程的总数、运行队列中的进程数量（由调度器进行调度的待运行进程数量）、reductions per interval (RpI) 值（自从上一次 called the node 后系统已经 reduction 的次数）、以及每个进程占用的内存量。
+**第四行** 展示了系统内存使用量、atom 内存占用量（当前使用量/总体分配量）、binary 内存占用量、code 内存占用量，以及 ets 内存占用量。
+**第五行** 为空白，目前作为预留。
+**第六行** 为和行内容展示相关的信息，例如信息获取时间间隔、信息展示排序方式，以及获取相关信息所耗费的时间。
+
+### 在 entop 运行状态下的控制命令
 
 [1-N]: 
-  Sort on column number 1 through N. Starts with first column (1) and up to N
-  where N is the last column.
+根据指定列编号进行输出内容排序。第一列编号为 1 ，其他列按顺序增加。
     
 r:
-  Toggles the sorting order from ascending to descending and vice versa.
+在升序排序和降序排序之间进行切换。
 
 q:
-  Quits entop and return to the shell.
+从 entop 中退出返回 shell 命令行。
 
 Ctrl-C:
-  Same as 'q'.
+等价于 'q' 命令。
 
 '<' and '>':
-  Moves the sorting column to the left or right respectively (these are the lower/greater-than-tags; not arrow keys).
+将当前排序列左移或者右移（注意：次数为小于和大于号，非箭头）
 
-Contribute
+贡献
 ----------
 Should you find yourself using entop and have issues, comments or feedback please [create an issue!] [1]
 
-[1]: http://github.com/mazenharake/entop/issues "entop issues"
+[1]: http://github.com/moooofly/entop/issues "entop issues"
