@@ -2,17 +2,17 @@
 # entop
 
 
-如同 Linux 中的 top 一样的 Erlang 节点监督工具。
+如同 Unix 中 top 一样的 Erlang 节点信息查看工具。
 
 
 ----------
 
 
 ## 简介
-entop 是用来展现远端 Erlang 节点信息的工具，其显示信息的方式类似于 Unix 中的 top 命令。
 
-entop 的正常运行在 pre-R15 情况下需要 `cecho 0.3.0` 的支持，在 R15 或更高版本的情况下需要 `cecho 0.4.0` 的支持。
-(http://www.github.com/mazenharake/cecho).
+entop 是用来展示远端 Erlang 节点运行信息的工具，其信息显示的方式类似于 Unix 中的 top 命令。   
+若要保证 entop 的正常运行，在 pre-R15 环境下，需要使用 `cecho 0.3.0` 版本；在 R15 或更高版本的环境下需要 `cecho 0.4.0` 版本。    
+cecho 的 github 地址：[这里](http://www.github.com/mazenharake/cecho)。
 
 
 ----------
@@ -26,7 +26,7 @@ entop 的正常运行在 pre-R15 情况下需要 `cecho 0.3.0` 的支持，在 R
     ./rebar compile
 ```
 
-注意：如果你遇到和 `cecho` 相关的依赖问题，可以手动创建符号链接到 `deps/` 下的 cecho （如果你的 cecho 放在其他目录也可以进行类似操作），或者运行 `./rebar get-deps` 以下载最新版本。当通过 rebar 获取到最新版本后，不要忘记重新编译整个应用。
+注意：如果你遇到和 `cecho` 依赖相关的问题，可以手动创建符号链接到 `deps/` 下的 cecho （如果你的 cecho 放在其他目录也可以进行类似操作），或者运行 `./rebar get-deps` 以下载最新版本。当通过 rebar 获取到最新版本后，不要忘记重新编译整个应用。
 
 
 ----------
@@ -74,7 +74,7 @@ entop 的接口允许用户定制化，所以本节描述的接口均为“内�
 **Ctrl-C**:  
 等价于 'q' 命令。  
 
-**'<'** and **'>'**:  
+**'<'** 和 **'>'**:  
 将当前排序列左移或者右移（注意：次数为小于和大于号，非箭头）  
 
 贡献
