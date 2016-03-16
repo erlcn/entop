@@ -74,15 +74,19 @@ init(Parent, State) ->
     loop(Parent, NState).
 
 init_callback(State) ->
+    %% 调用 entop_format:init/1
     case (State#state.callback):init(State#state.node) of
-	{ok, {Columns, DefaultSort}, CBState} when DefaultSort =< length(Columns) 
-						   andalso DefaultSort >= 1 ->
-	    NSort = DefaultSort;
-	{ok, {Columns, _}, CBState} ->
-	    NSort = 1
+        %% Columns -> 待显示的各列配置
+        %% DefaultSort -> 排序列标号
+        {ok, {Columns, DefaultSort}, CBState}
+                when DefaultSort =< length(Columns) andalso DefaultSort >= 1 ->
+            NSort = DefaultSort;
+        {ok, {Columns, _}, CBState} ->
+            NSort = 1
     end,
     State#state{ columns = Columns, cbstate = CBState, sort = NSort }.
 
+%% Node: upu@Betty (Connected) (17/6.0) unix (linux 2.6.32) CPU:4 SMP +A:10 +K
 print_nodeinfo(State) ->
     cecho:move(0, 0),
     cecho:hline($ , ?MAX_HLINE),
@@ -90,13 +94,19 @@ print_nodeinfo(State) ->
     OsVers = lists:concat([Mj,".",Md,".",Mi]),
     cecho:mvaddstr(0, 0, io_lib:format("Node: ~p ",[State#state.node])),
     case State#state.connected of
-	false -> cecho:addstr("(Disconnected)");
-	true -> cecho:addstr("(Connected)")
+        false -> cecho:addstr("(Disconnected)");
+        true -> cecho:addstr("(Connected)")
     end,
-    Head = io_lib:format(" (~s/~s) ~p (~p ~s)~s", 
-			 [State#state.otp_version, 
-			  State#state.erts_version, State#state.os_fam,
-			  State#state.os, OsVers, flags2str(State#state.node_flags)]),
+    % Head = io_lib:format(" (~s/~s) ~p (~p ~s)~s",
+    %          [State#state.otp_version,
+    %           State#state.erts_version, State#state.os_fam,
+    %           State#state.os, OsVers, flags2str(State#state.node_flags)]),
+
+    Head = io_lib:format(" (OTP Version R~s/ERTS-~s) ~p (~p ~s)~s",
+             [State#state.otp_version,
+              State#state.erts_version, State#state.os_fam,
+              State#state.os, OsVers, flags2str(State#state.node_flags)]),
+
     ok = cecho:addstr(lists:flatten(Head)).
 
 flags2str([]) -> [];
@@ -142,28 +152,31 @@ loop(Parent, State) ->
     end.
 
 fetch_and_update(State, IsForced) ->
+    %% 从远端节点获取信息
     case entop_net:fetch_data(State#state.node, State#state.remote_module) of
-	{_Time, {badrpc, nodedown}} ->
-	    NState = State#state{ connected = false },
-	    print_nodeinfo(NState),
-	    cecho:refresh(),
-	    erlang:spawn_link(entop_net, reconnect, [self(), State#state.node]),
-	    NState;
-	{_Time, {badrpc, {'EXIT', {undef, _}}}}->
-            remote_load_code(State#state.remote_module, State#state.node),
-            fetch_and_update(State, IsForced);
-	{Time, {ok, HeaderData, RowDataList}} ->
-	    State2 = update_screen(Time, HeaderData, RowDataList, State),
-	    if not IsForced -> erlang:send_after(State2#state.interval, self(), time_update);
-	       true -> ok
-	    end,
-	    State2
+        {_Time, {badrpc, nodedown}} ->
+            NState = State#state{ connected = false },
+            print_nodeinfo(NState),
+            cecho:refresh(),
+            erlang:spawn_link(entop_net, reconnect, [self(), State#state.node]),
+            NState;
+        {_Time, {badrpc, {'EXIT', {undef, _}}}}->
+                remote_load_code(State#state.remote_module, State#state.node),
+                fetch_and_update(State, IsForced);
+        {Time, {ok, HeaderData, RowDataList}} ->
+            State2 = update_screen(Time, HeaderData, RowDataList, State),
+            if not IsForced -> erlang:send_after(State2#state.interval, self(), time_update);
+               true -> ok
+            end,
+            State2
     end.
 
 update_sort_screen(State, N) ->
-    if N >= 1 andalso N =< length(State#state.columns) ->
-	    fetch_and_update(State#state{ sort = N }, true);
-       true -> State
+    if
+        N >= 1 andalso N =< length(State#state.columns) ->
+            fetch_and_update(State#state{ sort = N }, true);
+        true ->
+            State
     end.
 
 update_screen(Time, HeaderData, RowDataList, State) ->
@@ -172,9 +185,9 @@ update_screen(Time, HeaderData, RowDataList, State) ->
     print_showinfo(State, Time),
     {Headers, State1} = process_header_data(HeaderData, State),
     lists:foldl(fun(Header, Y) -> 
-			cecho:hline($ , ?MAX_HLINE),
-			cecho:mvaddstr(Y, 0, Header), Y + 1
-		end, 1, Headers),
+            cecho:hline($ , ?MAX_HLINE),
+            cecho:mvaddstr(Y, 0, Header), Y + 1
+        end, 1, Headers),
     {RowList, State2} = process_row_data(RowDataList, State1), 
     SortedRowList = sort(RowList, State),
     {Y, _} = cecho:getmaxyx(),
@@ -197,6 +210,7 @@ draw_title_bar([{Title, Width, Options}|Rest], Offset) ->
     cecho:mvaddstr(6, Offset, string:Align(Title, Width)++" "),
     draw_title_bar(Rest, Offset + Width + 1).
 
+%% RoundTripTime -> 从远端节点获取信息花费的时间
 print_showinfo(State, RoundTripTime) ->
     cecho:move(5, 0),
     cecho:hline($ , ?MAX_HLINE),
@@ -207,6 +221,9 @@ print_showinfo(State, RoundTripTime) ->
     cecho:mvaddstr(5,0, lists:flatten(Showing)).
 
 process_header_data(HeaderData, State) ->
+    %% 输出
+    %% Time: local time 17:12:21, up for 001:00:46:37, 3ms latency,
+    %% Processes: total 189 (RQ 0) at 52559 RpI using 13854.7k (13887.1k allocated)
     {ok, Headers, NCBState} = (State#state.callback):header(HeaderData, State#state.cbstate),
     {Headers, State#state{ cbstate = NCBState }}.
 

@@ -14,7 +14,20 @@
 %% limitations under the License.
 %%==============================================================================
 %% Records 
--record(state, { callback = entop_format, remote_module = entop_collector,
-		 columns, cbstate, node, otp_version, erts_version, os_fam, os,
-		 os_version, node_flags, interval = 1000, reverse_sort = true,
-		 sort = 1, connected = false }).
+-record(state, {
+    callback = entop_format,
+    remote_module = entop_collector,
+    columns,
+    cbstate,                %% 即 entop_format 模块中的 #state{node=undefined, cache=[]}
+    node,
+    otp_version,
+    erts_version,
+    os_fam,
+    os,
+    os_version,
+    node_flags,
+    interval = 1000,
+    reverse_sort = true,
+    sort = 1,               %% 排序列编号
+    connected = false
+}).

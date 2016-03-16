@@ -30,10 +30,9 @@ fetch_data(Node, Module) ->
 
 reconnect(Parent, Node) ->
     case net_kernel:connect(Node) of
-	true ->
-	    Parent ! {nodeup, Node};
-	false ->
-	    timer:sleep(1000),
-	    reconnect(Parent, Node)
+        true ->
+            Parent ! {nodeup, Node};
+        false ->
+            timer:sleep(1000),
+            reconnect(Parent, Node)
     end.
-	

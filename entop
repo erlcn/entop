@@ -37,12 +37,15 @@ shift
 for ARG in $@;
 do
     case $ARG in
-	"-name")
-	    NAME=; ;;
-	"-sname")
-	    NAME=; ;;
-	"-setcookie")
-	    COOKIE=; ;;
+        "-name")
+            NAME=;
+            ;;
+        "-sname")
+            NAME=;
+            ;;
+        "-setcookie")
+            COOKIE=;
+            ;;
     esac
 done
 
