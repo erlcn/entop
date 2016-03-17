@@ -26,26 +26,41 @@
 %% =============================================================================
 %% Application API
 %% =============================================================================
+%% Node -> console 上指定的目标节点名，如 'rmq_betty@Betty'
 start(Node) ->
     State = #state{ node = Node },
     case net_kernel:connect(Node) of
-	true ->
-	    ViewPid = entop_view:start(State#state{ connected = true }),
-	    control(ViewPid);
-	false ->
-	    halt(101)
+        true ->
+            ViewPid = entop_view:start(State#state{ connected = true }),
+            control(ViewPid);
+        false ->
+            %% 给 erl xxx 调用的返回值，可以通过 $? 获取
+            halt(101)
     end.
 
+%% 在 entop 输出过程中获取控制指令
 control(ViewPid) ->
     P = cecho:getch(),
     case P of
-	N when N >= 49 andalso N =< 57 -> ViewPid ! {sort, N - 48}, control(ViewPid);
-	$> -> ViewPid ! {sort, next}, control(ViewPid);
-	$< -> ViewPid ! {sort, prev}, control(ViewPid);
-	$r -> ViewPid ! reverse_sort, control(ViewPid);
-	$q -> do_exit(ViewPid);
-	3 -> do_exit(ViewPid); %Ctrl-C
-	_ -> ViewPid ! force_update, control(ViewPid)
+        N when N >= 49 andalso N =< 57 -> %% 对应数字 1~9
+            ViewPid ! {sort, N - 48},
+            control(ViewPid);
+        $> ->
+            ViewPid ! {sort, next},
+            control(ViewPid);
+        $< ->
+            ViewPid ! {sort, prev},
+            control(ViewPid);
+        $r ->
+            ViewPid ! reverse_sort,
+            control(ViewPid);
+        $q ->
+            do_exit(ViewPid);
+        3 ->
+            do_exit(ViewPid);   %% Ctrl-C 对应于 ASCII 码 3
+        _ ->                    %% 输出不识别指令，则强制刷新输出内容
+            ViewPid ! force_update,
+            control(ViewPid)
     end.
 
 do_exit(ViewPid) ->

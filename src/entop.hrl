@@ -17,17 +17,17 @@
 -record(state, {
     callback = entop_format,
     remote_module = entop_collector,
-    columns,
+    columns,                %% entop_format:init/1 中对 Columns 的定制
     cbstate,                %% 即 entop_format 模块中的 #state{node=undefined, cache=[]}
-    node,
+    node,                   %% 命令行上指定的目标节点名
     otp_version,
     erts_version,
     os_fam,
     os,
     os_version,
-    node_flags,
-    interval = 1000,
+    node_flags,             %% [{cpus, xxx},{smp, xxx},{a_threads, xxx},{kpoll, xxx}]
+    interval = 1000,        %% 默认的输出刷新时间间隔
     reverse_sort = true,
     sort = 1,               %% 排序列编号
-    connected = false
+    connected = false       %% 表示连接状态
 }).

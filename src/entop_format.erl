@@ -50,13 +50,14 @@ init(Node) ->
             ],
     {ok, {Columns, 3}, #state{ node = Node }}.
 
+%% 行数据头
 %% Header Callback
 header(SystemInfo, State) ->
     Uptime = millis2uptimestr(element(1, proplists:get_value(uptime, SystemInfo, 0))),
     LocalTime = local2str(element(2, proplists:get_value(local_time, SystemInfo))),
     PingTime = element(1,timer:tc(net_adm, ping, [State#state.node])) div 1000,
     Row1 = io_lib:format("Time: local time ~s, up for ~s, ~pms latency, ",
-			 [LocalTime, Uptime, PingTime]),
+                [LocalTime, Uptime, PingTime]),
 
     PTotal = proplists:get_value(process_count, SystemInfo),
     RQueue = proplists:get_value(run_queue, SystemInfo),
@@ -64,7 +65,7 @@ header(SystemInfo, State) ->
     PMemUsed = proplists:get_value(process_memory_used, SystemInfo),
     PMemTotal = proplists:get_value(process_memory_total, SystemInfo),
     Row2 = io_lib:format("Processes: total ~p (RQ ~p) at ~p RpI using ~s (~s allocated)",
-			 [PTotal, RQueue, RedTotal, mem2str(PMemUsed), mem2str(PMemTotal)]),
+                [PTotal, RQueue, RedTotal, mem2str(PMemUsed), mem2str(PMemTotal)]),
 
     MemInfo = proplists:get_value(memory, SystemInfo),
     SystemMem = mem2str(proplists:get_value(system, MemInfo)),
@@ -74,21 +75,22 @@ header(SystemInfo, State) ->
     CodeMem = mem2str(proplists:get_value(code, MemInfo)),
     EtsMem = mem2str(proplists:get_value(ets, MemInfo)),
     Row3 = io_lib:format("Memory: Sys ~s, Atom ~s/~s, Bin ~s, Code ~s, Ets ~s",
-			 [SystemMem, AtomUsedMem, AtomMem, BinMem, CodeMem, EtsMem]),
+                [SystemMem, AtomUsedMem, AtomMem, BinMem, CodeMem, EtsMem]),
     Row4 = "",
     {ok, [ lists:flatten(Row) || Row <- [Row1, Row2, Row3, Row4] ], State}.
 
+%% 行数据内容
 %% Column Specific Callbacks
 row([{pid,_}|undefined], State) ->
     {ok, skip, State};
 row(ProcessInfo, State) ->
     Pid = proplists:get_value(pid, ProcessInfo),
     RegName = case proplists:get_value(registered_name, ProcessInfo) of
-		  [] ->
-		      "-";
-		  Name ->
-		      atom_to_list(Name)
-	      end,
+        [] ->
+            "-";
+        Name ->
+            atom_to_list(Name)
+        end,
     Reductions = proplists:get_value(reductions, ProcessInfo, 0),
     Queue = proplists:get_value(message_queue_len, ProcessInfo, 0),
     Heap = proplists:get_value(heap_size, ProcessInfo, 0),
@@ -97,9 +99,13 @@ row(ProcessInfo, State) ->
     {ok, {Pid, RegName, Reductions, Queue, Heap, Stack, HeapTot}, State}.
 
 mem2str(Mem) ->
-    if Mem > ?GIB -> io_lib:format("~.1fm",[Mem/?MIB]);
-       Mem > ?KIB -> io_lib:format("~.1fk",[Mem/?KIB]);
-       Mem >= 0 -> io_lib:format("~.1fb",[Mem/1.0])
+    if
+        Mem > ?GIB  ->
+            io_lib:format("~.1fm",[Mem/?MIB]);
+        Mem > ?KIB  ->
+            io_lib:format("~.1fk",[Mem/?KIB]);
+        Mem >= 0    ->
+            io_lib:format("~.1fb",[Mem/1.0])
     end.
 
 millis2uptimestr(Millis) ->
