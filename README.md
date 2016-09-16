@@ -1,4 +1,7 @@
 
+
+
+
 # entop
 
 
@@ -83,11 +86,11 @@ entop 的接口允许用户定制化，所以本节描述的接口均为“内�
 ![](https://raw.githubusercontent.com/moooofly/ImageCache/master/Pictures/entop%E6%9F%A5%E7%9C%8Brabbitmq.png "通过 entop 查看 RabbitMQ 运行状态")
 
 其中
-Reductions -- the number of reductions executed by the process
-MQueue -- the number of messages currently in the message queue of the process
-HSize -- the size in words of youngest heap generation of the process
-SSize -- the stack size of the process in words
-HTot -- the total size in words of all heap fragments of the process
+- Reductions -- the number of reductions executed by the process
+- MQueue -- the number of messages currently in the message queue of the process
+- HSize -- the size in words of youngest heap generation of the process
+- SSize -- the stack size of the process in words
+- HTot -- the total size in words of all heap fragments of the process
 
 贡献
 ----------
