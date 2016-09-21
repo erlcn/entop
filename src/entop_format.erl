@@ -42,7 +42,7 @@ init(Node) ->
                 %% {Title, Width, Options}
                 {"Pid",             12, [{align, right}]},
                 {"Registered Name", 20, []},
-                {"Reductions",      12, []},
+                {"Reductions",      25, []},
                 {"MQueue",          6,  []},
                 {"HSize",           6,  []},
                 {"SSize",           6,  []},
